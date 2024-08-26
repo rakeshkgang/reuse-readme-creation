@@ -1,0 +1,44 @@
+name: Generate ECR and S3 Docs
+
+on:
+  workflow_call:
+    inputs:
+      ecr_directory:
+        description: 'Path to the ECR documentation directory'
+        required: true
+        type: string
+      s3_directory:
+        description: 'Path to the S3 documentation directory'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate ECR Docs
+        run: |
+          echo "Generating ECR documentation..."
+          # Replace the following command with your actual ECR documentation generation script
+          ./scripts/generate-ecr-docs.sh ${{ inputs.ecr_directory }}
+
+      - name: Generate S3 Docs
+        run: |
+          echo "Generating S3 documentation..."
+          # Replace the following command with your actual S3 documentation generation script
+          ./scripts/generate-s3-docs.sh ${{ inputs.s3_directory }}
+
+      - name: Commit changes
+        run: |
+          git config --local user.name "rakeshkgang"
+          git config --local user.email "rakeshkgang8057@gmail.com"
+          git add ${{ inputs.ecr_directory }}/docs/ ${{ inputs.s3_directory }}/docs/
+          git commit -m "Update ECR and S3 Docs"
+          git push
